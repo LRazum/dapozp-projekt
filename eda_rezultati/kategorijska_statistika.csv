@@ -1,0 +1,15 @@
+stupac,broj_jedinstvenih,najcesce,frekvencija
+continent,5,Africa,53
+region,22,Caribbean,21
+hemisphere,2,Northern,172
+primary_language_family,16,Indo-European,98
+income_group,4,High income,81
+economic_structure,4,Service-dominant,82
+gdp_tier,4,High,76
+population_tier,5,Small,66
+density_tier,4,Moderate,94
+urbanization_tier,4,Urban,76
+fertility_tier,4,Below-replacement,116
+aging_tier,5,Young,70
+life_expectancy_tier,4,High,79
+internet_tier,4,High,74
