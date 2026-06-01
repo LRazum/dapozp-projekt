@@ -1,0 +1,54 @@
+METODA #1 — STABLO ODLUČIVANJA: REZULTATI
+
+Ciljna varijabla: income_group
+Broj značajki: 35  |  Broj uzoraka: 209
+Klase: Low income, Lower middle income, Upper middle income, High income
+
+Najbolji hiperparametri (GridSearchCV, f1_macro, 5-struka CV):
+  class_weight = None
+  criterion = entropy
+  max_depth = 3
+  min_samples_leaf = 8
+  najbolji CV f1_macro = 0.672
+  dubina stabla = 3  |  broj listova = 7
+
+Evaluacija na testnom skupu:
+  točnost (accuracy) = 0.698
+  F1-macro           = 0.685
+  --- referentni model (DummyClassifier, most_frequent) ---
+  baseline točnost   = 0.377
+  baseline F1-macro  = 0.137
+
+Izvještaj po klasama (testni skup):
+                     precision    recall  f1-score   support
+
+         Low income       0.71      0.83      0.77         6
+Lower middle income       0.56      0.69      0.62        13
+Upper middle income       0.60      0.43      0.50        14
+        High income       0.85      0.85      0.85        20
+
+           accuracy                           0.70        53
+          macro avg       0.68      0.70      0.68        53
+       weighted avg       0.70      0.70      0.69        53
+
+
+Izlučena pravila (export_text):
+|--- agriculture_pct_gdp <= 4.74
+|   |--- infant_mortality <= 15.15
+|   |   |--- internet_users_pct <= 89.02
+|   |   |   |--- class: High income
+|   |   |--- internet_users_pct >  89.02
+|   |   |   |--- class: High income
+|   |--- infant_mortality >  15.15
+|   |   |--- class: Upper middle income
+|--- agriculture_pct_gdp >  4.74
+|   |--- electricity_access_pct <= 91.80
+|   |   |--- internet_users_pct <= 40.09
+|   |   |   |--- class: Low income
+|   |   |--- internet_users_pct >  40.09
+|   |   |   |--- class: Lower middle income
+|   |--- electricity_access_pct >  91.80
+|   |   |--- population_growth_pct <= 0.56
+|   |   |   |--- class: Upper middle income
+|   |   |--- population_growth_pct >  0.56
+|   |   |   |--- class: Lower middle income
