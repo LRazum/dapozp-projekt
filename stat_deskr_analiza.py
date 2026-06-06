@@ -3,15 +3,18 @@ import sys
 from pathlib import Path
 
 import matplotlib
+# Koristimo "Agg" backend jer skripta služi samo za generiranje i spremanje slika. 
+# Ovo sprječava greške na serverima ili sustavima bez grafičkog sučelja.
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
+# Globalno postavljanje stila da svi grafovi izgledaju uniformno i profinjeno
 sns.set_theme(style="whitegrid", palette="muted")
 
-# citljiv izgled svih grafova
+# Centralizirane postavke za fontove i veličine. 
 plt.rcParams.update({
     "savefig.dpi": 140,
     "font.size": 10,
@@ -24,7 +27,6 @@ plt.rcParams.update({
     "figure.titleweight": "bold",
     "legend.fontsize": 8,
 })
-
 
 ID_COLS = ["iso3", "country_name", "capital"]
 
@@ -57,7 +59,7 @@ CORE_CATEGORICAL = [
     "life_expectancy_tier", "internet_tier",
 ]
 
-# Hrvatski nazivi skupina za naslove (vrijednosti u podacima ostaju na engleskom)
+# Rječnici za mapiranje tehničkih naziva u čitljivije hrvatske naslove na grafovima
 GRUPA_OPIS = {
     "income_group": "dohodovnoj skupini",
     "continent": "kontinentu",
@@ -69,6 +71,8 @@ GRUPA_DATOTEKA = {
 
 
 def filtriraj_stupce(stupci, df):
+    # filtriramo samo one stupce koji stvarno postoje u df-u.
+    # skripta neće puknuti ako u ulaznom csv fali neki podatak.
     return [s for s in stupci if s in df.columns]
 
 def spremi(fig, izlazni_dir, ime_datoteke):
@@ -85,12 +89,15 @@ def ucitaj_podatke(putanja):
 def statistika(df, izlazni_dir):
     num_stupci = filtriraj_stupce(CORE_CONTINUOUS, df)
     opis = df[num_stupci].describe().T
+    
+    # Dodajemo mjerila oblika distribucije (koliko je nagnuta i koliko "debele" repove ima)
     opis["asimetrija"] = df[num_stupci].skew()
     opis["kurtosis"] = df[num_stupci].kurtosis()
     opis.round(4).to_csv(izlazni_dir / "numericka_statistika.csv")
 
     kat_stupci = filtriraj_stupce(CORE_CATEGORICAL, df)
     redovi = []
+    # Za kategorije nemamo prosjeke, pa vadimo broj jedinstvenih i najčešću vrijednost (mod)
     for s in kat_stupci:
         vc = df[s].value_counts()
         redovi.append({
@@ -107,13 +114,17 @@ def mreza_histograma(df, stupci, izlazni_dir, ime_datoteke, naslov, broj_stupaca
     broj_redova = int(np.ceil(n / broj_stupaca))
     fig, axes = plt.subplots(broj_redova, broj_stupaca,
                              figsize=(4.5 * broj_stupaca, 3.1 * broj_redova))
+    
+    # ravel pretvara 2D mrežu grafova u 1D listu kako bismo po njoj lakše iterirali u petlji
     axes = np.atleast_1d(axes).ravel()
 
     for i, (ax, stupac) in enumerate(zip(axes, stupci)):
         podaci = df[stupac].dropna()
-        # Jako asimetrične varijable prikazujemo na logaritamskoj osi radi čitljivosti
+        
+        # Ako imamo enormne raspone (npr. stanovništvo Kine vs. Vatikana),
+        # bacamo to na log skalu da graf ne izgleda kao jedna dugačka prazna linija.
         if stupac in LOG_SCALE_VARS:
-            podaci = podaci[podaci > 0]
+            podaci = podaci[podaci > 0] # log(0) je -inf, pa ih izbacujemo
             sns.histplot(podaci, kde=True, ax=ax, color="#2980b9",
                          log_scale=True, edgecolor="white", linewidth=0.4)
             ax.set_title(f"{stupac}  (log skala)", fontsize=9)
@@ -123,7 +134,7 @@ def mreza_histograma(df, stupci, izlazni_dir, ime_datoteke, naslov, broj_stupaca
                          edgecolor="white", linewidth=0.4)
             ax.set_title(stupac, fontsize=9)
             ax.set_xlabel("vrijednost", fontsize=8)
-        # y-os = broj država (frekvencija) — označavamo samo lijevi stupac mreže
+            
         if i % broj_stupaca == 0:
             ax.set_ylabel("broj država", fontsize=8)
         else:
@@ -143,16 +154,21 @@ def distribucije(df, izlazni_dir):
     mreza_histograma(df, num_stupci, izlazni_dir, "01_histogrami.png",
                      "Distribucije kontinuiranih varijabli")
 
-    # Standardizirani box-plotovi: sve varijable na zajedničkoj z-skali
-    # radi usporedbe raspršenosti i netipičnih vrijednosti (outliera).
+    # Z-SCORE STANDARDIZACIJA: BDP mjerimo u desecima tisuća,
+    # a natalitet u jednoznamenkastim brojkama. Oduzimanjem prosjeka i dijeljenjem 
+    # sa standardnom devijacijom sve svodimo na istu mjeru
     z = (df[num_stupci] - df[num_stupci].mean()) / df[num_stupci].std()
+    
+    # sort po asimetriji tako da na vrhu grafa budu varijable s najvećim ekstremima
     poredak = df[num_stupci].skew().abs().sort_values(ascending=False).index
+    
+    # 'melt' pretvara široku tablicu u dugačku, seabornu treba za crtanje ovakvog grafa
     zm = z.melt(var_name="varijabla", value_name="z")
 
     fig, ax = plt.subplots(figsize=(11, 8))
     sns.boxplot(data=zm, x="z", y="varijabla", order=poredak, ax=ax,
                 color="#2980b9", fliersize=2, linewidth=0.8)
-    ax.axvline(0, color="#888888", lw=0.8, ls="--")
+    ax.axvline(0, color="#888888", lw=0.8, ls="--") # Nulta linija predstavlja prosjek
     ax.set_title("Raspršenost i netipične vrijednosti (outlieri) svih varijabli\n"
                  "(sve standardizirano na z-vrijednosti; poredano po asimetriji)")
     ax.set_xlabel("z-vrijednost (broj standardnih devijacija od prosjeka)")
@@ -166,7 +182,10 @@ def korelacije(df, izlazni_dir):
     pearson = df[num_stupci].corr(method="pearson")
 
     fig, ax = plt.subplots(figsize=(14, 12))
+    
+    # generiramo masku da sakrijemo gornji desni trokut matrice. Korelacija A->B 
     maska = np.triu(np.ones_like(pearson, dtype=bool))
+    
     sns.heatmap(pearson, mask=maska, cmap="RdBu_r", center=0, vmin=-1, vmax=1,
                 square=True, annot=True, fmt=".2f", annot_kws={"size": 6.5},
                 linewidths=0.5, linecolor="white",
@@ -204,6 +223,7 @@ def bivarijantne(df, izlazni_dir):
         sns.scatterplot(data=df, x=x, y=y, hue=boja, ax=ax, s=45, alpha=0.85,
                         edgecolor="white", linewidth=0.3,
                         legend=(i == 0 and boja is not None))
+        
         if logx:
             ax.set_xscale("log")
             ax.set_xlabel(f"{x}  (log skala)")
@@ -212,7 +232,8 @@ def bivarijantne(df, izlazni_dir):
         ax.set_ylabel(y)
         ax.set_title(f"{y}  vs.  {x}")
         sns.despine(ax=ax)
-        # Jedna zajednička legenda za cijelu figuru
+        
+        # Vadimo legendu iz prvog grafa
         if i == 0 and ax.get_legend() is not None:
             rucke, oznake = ax.get_legend_handles_labels()
             ax.get_legend().remove()
@@ -221,6 +242,7 @@ def bivarijantne(df, izlazni_dir):
         ax.axis("off")
 
     fig.suptitle("Ključni bivarijatni odnosi (boja = dohodovna skupina)")
+    # ...da bismo ovdje nacrtali jednu jedinstvenu legendu na dnu cijele slike
     if rucke:
         fig.legend(rucke, oznake, title="Dohodovna skupina", loc="lower center",
                    ncol=len(oznake), bbox_to_anchor=(0.5, -0.03), frameon=False)
@@ -238,11 +260,13 @@ def grafovi_kategorija(df, izlazni_dir):
         axes = np.atleast_1d(axes).ravel()
 
         for ax, stupac in zip(axes, kat_stupci):
+            # .sort_values() automatski slaže barove po duljini (od najmanjeg prema najvećem)
             df[stupac].value_counts().sort_values().plot.barh(ax=ax, color="#8e44ad")
+            # Dodajemo točan broj na kraj svakog bara za lakše čitanje
             ax.bar_label(ax.containers[0], fontsize=8, padding=2)
             ax.set_title(stupac)
             ax.set_xlabel("broj država")
-            ax.margins(x=0.12)
+            ax.margins(x=0.12) # prostor desno da text s brojem ne iskoči iz grafa
             sns.despine(ax=ax)
 
         for ax in axes[len(kat_stupci):]:
@@ -254,6 +278,7 @@ def grafovi_kategorija(df, izlazni_dir):
     bin_stupci = filtriraj_stupce(BINARY_COLS, df)
     if bin_stupci:
         fig, ax = plt.subplots(figsize=(8, 5))
+        # zbrajanjem (sum) True/1 vrijednosti automatski dobivamo frekvenciju za binarne stupce
         df[bin_stupci].sum().sort_values().plot.barh(ax=ax, color="#e67e22")
         ax.bar_label(ax.containers[0], fontsize=9, padding=2)
         ax.set_title("Binarna obilježja – broj država (vrijednost = 1)")
@@ -278,6 +303,7 @@ def grupirani_boxplotovi(df, izlazni_dir):
         axes = np.atleast_1d(axes).ravel()
 
         for ax, m in zip(axes, mete):
+            # Računamo medijan za svaku grupu i po njemu ih sortiramo
             poredak = df.groupby(grupa)[m].median().sort_values().index
             sns.boxplot(data=df, x=grupa, y=m, order=poredak, ax=ax,
                         color="#5dade2", fliersize=2, linewidth=0.8)
@@ -294,23 +320,25 @@ def grupirani_boxplotovi(df, izlazni_dir):
 
 
 def main():
+    # python skripta.py moji_podaci.csv --izlaz rezultati_folder
     ap = argparse.ArgumentParser()
     ap.add_argument("podaci", nargs="?", default="countries_complete.csv")
     ap.add_argument("--izlaz", default="eda_rezultati")
     args = ap.parse_args()
 
     izlazni_dir = Path(args.izlaz)
+    # Automatski kreira direktorij (i poddirektorije) ako ne postoje, bez izbacivanja greške
     izlazni_dir.mkdir(parents=True, exist_ok=True)
 
     df = ucitaj_podatke(Path(args.podaci))
 
+    # pipeline 
     statistika(df, izlazni_dir)
     distribucije(df, izlazni_dir)
     korelacije(df, izlazni_dir)
     bivarijantne(df, izlazni_dir)
     grafovi_kategorija(df, izlazni_dir)
     grupirani_boxplotovi(df, izlazni_dir)
-
 
 if __name__ == "__main__":
     main()
