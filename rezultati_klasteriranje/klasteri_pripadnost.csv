@@ -1,0 +1,210 @@
+iso3,country_name,continent,income_group,klaster
+ABW,Aruba,Americas,High income,2
+AFG,Afghanistan,Asia,Low income,0
+AGO,Angola,Africa,Lower middle income,0
+ALB,Albania,Europe,Upper middle income,2
+AND,Andorra,Europe,High income,2
+ARE,United Arab Emirates,Asia,High income,1
+ARG,Argentina,Americas,Upper middle income,1
+ARM,Armenia,Asia,Upper middle income,2
+ATG,Antigua and Barbuda,Americas,High income,2
+AUS,Australia,Oceania,High income,1
+AUT,Austria,Europe,High income,2
+AZE,Azerbaijan,Asia,Upper middle income,1
+BDI,Burundi,Africa,Low income,0
+BEL,Belgium,Europe,High income,2
+BEN,Benin,Africa,Lower middle income,0
+BFA,Burkina Faso,Africa,Low income,0
+BGD,Bangladesh,Asia,Lower middle income,1
+BGR,Bulgaria,Europe,High income,2
+BHR,Bahrain,Asia,High income,2
+BHS,"Bahamas, The",Americas,High income,2
+BIH,Bosnia and Herzegovina,Europe,Upper middle income,2
+BLR,Belarus,Europe,Upper middle income,1
+BLZ,Belize,Americas,Upper middle income,1
+BMU,Bermuda,Americas,High income,2
+BOL,Bolivia,Americas,Lower middle income,1
+BRA,Brazil,Americas,Upper middle income,1
+BRB,Barbados,Americas,High income,2
+BRN,Brunei Darussalam,Asia,High income,1
+BTN,Bhutan,Asia,Lower middle income,1
+BWA,Botswana,Africa,Upper middle income,1
+CAF,Central African Republic,Africa,Low income,0
+CAN,Canada,Americas,High income,1
+CHE,Switzerland,Europe,High income,2
+CHI,Channel Islands,Europe,High income,2
+CHL,Chile,Americas,High income,1
+CHN,China,Asia,Upper middle income,1
+CIV,Cote d'Ivoire,Africa,Lower middle income,0
+CMR,Cameroon,Africa,Lower middle income,0
+COD,"Congo, Dem. Rep.",Africa,Low income,0
+COG,"Congo, Rep.",Africa,Lower middle income,0
+COL,Colombia,Americas,Upper middle income,1
+COM,Comoros,Africa,Lower middle income,0
+CPV,Cabo Verde,Africa,Upper middle income,2
+CRI,Costa Rica,Americas,High income,2
+CUB,Cuba,Americas,Upper middle income,2
+CUW,Curacao,Americas,High income,2
+CYM,Cayman Islands,Americas,High income,2
+CYP,Cyprus,Asia,High income,2
+CZE,Czechia,Europe,High income,2
+DEU,Germany,Europe,High income,2
+DJI,Djibouti,Africa,Lower middle income,1
+DMA,Dominica,Americas,Upper middle income,2
+DNK,Denmark,Europe,High income,2
+DOM,Dominican Republic,Americas,Upper middle income,1
+DZA,Algeria,Africa,Upper middle income,1
+ECU,Ecuador,Americas,Upper middle income,1
+EGY,"Egypt, Arab Rep.",Africa,Lower middle income,1
+ERI,Eritrea,Africa,Low income,0
+ESP,Spain,Europe,High income,2
+EST,Estonia,Europe,High income,2
+FIN,Finland,Europe,High income,2
+FJI,Fiji,Oceania,Upper middle income,1
+FRA,France,Europe,High income,2
+FRO,Faroe Islands,Europe,High income,2
+FSM,"Micronesia, Fed. Sts.",Oceania,Lower middle income,2
+GAB,Gabon,Africa,Upper middle income,1
+GBR,United Kingdom,Europe,High income,2
+GEO,Georgia,Asia,Upper middle income,2
+GHA,Ghana,Africa,Lower middle income,0
+GIN,Guinea,Africa,Lower middle income,0
+GMB,"Gambia, The",Africa,Low income,0
+GNB,Guinea-Bissau,Africa,Low income,0
+GNQ,Equatorial Guinea,Africa,Upper middle income,0
+GRC,Greece,Europe,High income,2
+GRD,Grenada,Americas,Upper middle income,2
+GRL,Greenland,Americas,High income,1
+GTM,Guatemala,Americas,Upper middle income,1
+GUY,Guyana,Americas,High income,1
+HKG,"Hong Kong SAR, China",Asia,High income,2
+HND,Honduras,Americas,Lower middle income,1
+HRV,Croatia,Europe,High income,2
+HTI,Haiti,Americas,Lower middle income,0
+HUN,Hungary,Europe,High income,2
+IDN,Indonesia,Asia,Upper middle income,1
+IMN,Isle of Man,Europe,High income,2
+IND,India,Asia,Lower middle income,1
+IRL,Ireland,Europe,High income,2
+IRN,"Iran, Islamic Rep.",Asia,Upper middle income,1
+IRQ,Iraq,Asia,Upper middle income,1
+ISL,Iceland,Europe,High income,2
+ISR,Israel,Asia,High income,2
+ITA,Italy,Europe,High income,2
+JAM,Jamaica,Americas,Upper middle income,2
+JOR,Jordan,Asia,Lower middle income,1
+JPN,Japan,Asia,High income,2
+KAZ,Kazakhstan,Asia,Upper middle income,1
+KEN,Kenya,Africa,Lower middle income,0
+KGZ,Kyrgyz Republic,Asia,Lower middle income,1
+KHM,Cambodia,Asia,Lower middle income,1
+KIR,Kiribati,Oceania,Lower middle income,2
+KNA,St. Kitts and Nevis,Americas,High income,2
+KOR,"Korea, Rep.",Asia,High income,2
+KWT,Kuwait,Asia,High income,1
+LAO,Lao PDR,Asia,Lower middle income,1
+LBN,Lebanon,Asia,Lower middle income,2
+LBR,Liberia,Africa,Low income,0
+LBY,Libya,Africa,Upper middle income,1
+LCA,St. Lucia,Americas,Upper middle income,2
+LIE,Liechtenstein,Europe,High income,2
+LKA,Sri Lanka,Asia,Lower middle income,1
+LSO,Lesotho,Africa,Lower middle income,0
+LTU,Lithuania,Europe,High income,2
+LUX,Luxembourg,Europe,High income,2
+LVA,Latvia,Europe,High income,2
+MAC,"Macao SAR, China",Asia,High income,2
+MAR,Morocco,Africa,Lower middle income,1
+MCO,Monaco,Europe,High income,2
+MDA,Moldova,Europe,Upper middle income,2
+MDG,Madagascar,Africa,Low income,0
+MDV,Maldives,Asia,Upper middle income,2
+MEX,Mexico,Americas,Upper middle income,1
+MHL,Marshall Islands,Oceania,Upper middle income,2
+MKD,North Macedonia,Europe,Upper middle income,2
+MLI,Mali,Africa,Low income,0
+MLT,Malta,Europe,High income,2
+MMR,Myanmar,Asia,Lower middle income,0
+MNE,Montenegro,Europe,Upper middle income,2
+MNG,Mongolia,Asia,Upper middle income,1
+MOZ,Mozambique,Africa,Low income,0
+MRT,Mauritania,Africa,Lower middle income,0
+MUS,Mauritius,Africa,Upper middle income,2
+MWI,Malawi,Africa,Low income,0
+MYS,Malaysia,Asia,Upper middle income,1
+NAM,Namibia,Africa,Lower middle income,1
+NCL,New Caledonia,Oceania,High income,2
+NER,Niger,Africa,Low income,0
+NGA,Nigeria,Africa,Lower middle income,0
+NIC,Nicaragua,Americas,Lower middle income,1
+NLD,Netherlands,Europe,High income,2
+NOR,Norway,Europe,High income,1
+NPL,Nepal,Asia,Lower middle income,1
+NRU,Nauru,Oceania,High income,2
+NZL,New Zealand,Oceania,High income,2
+OMN,Oman,Asia,High income,1
+PAK,Pakistan,Asia,Lower middle income,0
+PAN,Panama,Americas,High income,1
+PER,Peru,Americas,Upper middle income,1
+PHL,Philippines,Asia,Lower middle income,1
+PLW,Palau,Oceania,High income,2
+PNG,Papua New Guinea,Oceania,Lower middle income,0
+POL,Poland,Europe,High income,2
+PRI,Puerto Rico (US),Americas,High income,2
+PRT,Portugal,Europe,High income,2
+PRY,Paraguay,Americas,Upper middle income,1
+PSE,West Bank and Gaza,Asia,Lower middle income,1
+PYF,French Polynesia,Oceania,High income,2
+QAT,Qatar,Asia,High income,1
+ROU,Romania,Europe,High income,2
+RUS,Russian Federation,Europe,High income,1
+RWA,Rwanda,Africa,Low income,0
+SAU,Saudi Arabia,Asia,High income,1
+SDN,Sudan,Africa,Low income,0
+SEN,Senegal,Africa,Lower middle income,0
+SGP,Singapore,Asia,High income,2
+SLB,Solomon Islands,Oceania,Lower middle income,0
+SLE,Sierra Leone,Africa,Low income,0
+SLV,El Salvador,Americas,Upper middle income,2
+SMR,San Marino,Europe,High income,2
+SOM,"Somalia, Fed. Rep.",Africa,Low income,0
+SRB,Serbia,Europe,Upper middle income,2
+SSD,South Sudan,Africa,Low income,0
+STP,Sao Tome and Principe,Africa,Lower middle income,2
+SUR,Suriname,Americas,Upper middle income,1
+SVK,Slovak Republic,Europe,High income,2
+SVN,Slovenia,Europe,High income,2
+SWE,Sweden,Europe,High income,2
+SWZ,Eswatini,Africa,Lower middle income,1
+SXM,Sint Maarten (Dutch part),Americas,High income,2
+SYC,Seychelles,Africa,High income,2
+SYR,Syrian Arab Republic,Asia,Low income,0
+TCA,Turks and Caicos Islands,Americas,High income,2
+TCD,Chad,Africa,Low income,0
+TGO,Togo,Africa,Low income,0
+THA,Thailand,Asia,Upper middle income,1
+TJK,Tajikistan,Asia,Lower middle income,1
+TKM,Turkmenistan,Asia,Upper middle income,1
+TLS,Timor-Leste,Asia,Lower middle income,0
+TON,Tonga,Oceania,Upper middle income,2
+TTO,Trinidad and Tobago,Americas,High income,2
+TUN,Tunisia,Africa,Lower middle income,1
+TUR,Turkiye,Asia,Upper middle income,1
+TUV,Tuvalu,Oceania,Upper middle income,2
+TZA,Tanzania,Africa,Lower middle income,0
+UGA,Uganda,Africa,Low income,0
+UKR,Ukraine,Europe,Upper middle income,1
+URY,Uruguay,Americas,High income,2
+USA,United States,Americas,High income,2
+UZB,Uzbekistan,Asia,Lower middle income,1
+VCT,St. Vincent and the Grenadines,Americas,Upper middle income,2
+VGB,British Virgin Islands,Americas,High income,2
+VIR,Virgin Islands (U.S.),Americas,High income,2
+VNM,Viet Nam,Asia,Lower middle income,1
+VUT,Vanuatu,Oceania,Lower middle income,0
+WSM,Samoa,Oceania,Upper middle income,2
+XKX,Kosovo,Europe,Upper middle income,2
+YEM,"Yemen, Rep.",Asia,Low income,0
+ZAF,South Africa,Africa,Upper middle income,1
+ZMB,Zambia,Africa,Lower middle income,0
+ZWE,Zimbabwe,Africa,Lower middle income,0
