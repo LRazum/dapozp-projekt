@@ -21,12 +21,12 @@ Pokretanje:
     python 02_stablo_odlucivanja.py
     python 02_stablo_odlucivanja.py countries_complete.csv --izlaz rezultati_stablo
 """
-import argparse
+import argparse # parser naredbenog retka
 import sys
-from pathlib import Path
+from pathlib import Path # rad s datotekama i direktorijima
 
 import matplotlib
-matplotlib.use("Agg")
+matplotlib.use("Agg") # crtanje bez sučelja, samo sprema png datoteke 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -36,9 +36,10 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree, export_text
 from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV
 from sklearn.metrics import (classification_report, confusion_matrix,
                              ConfusionMatrixDisplay, accuracy_score, f1_score)
-from sklearn.dummy import DummyClassifier
-from sklearn.inspection import permutation_importance
+from sklearn.dummy import DummyClassifier # usporedba je li model bolji od trivijalnog "najčešće klase"
+from sklearn.inspection import permutation_importance # pouzdanija mjera važnosti značajki od Gini kad su korelirane, permutacijom
 
+# izgled grafova
 sns.set_theme(style="whitegrid", palette="muted")
 plt.rcParams.update({
     "savefig.dpi": 140,
@@ -49,7 +50,7 @@ plt.rcParams.update({
     "figure.titleweight": "bold",
 })
 
-SLUCAJNO_STANJE = 42
+SLUCAJNO_STANJE = 42 # za ponovljivost rezultata
 
 CILJ = "income_group"
 # Poredak klasa od najniže prema najvišoj (za čitljivost matrice zabune)
@@ -67,8 +68,7 @@ KONT_ZNACAJKE = [
     "electricity_access_pct", "land_area_km2",
 ]
 
-# Binarna obilježja (geografija + članstva). Napomena: oecd/eu/g20 mogu djelovati
-# kao posredne mjere bogatstva — to je zanimljiv nalaz za interpretaciju.
+# Binarna obilježja (geografija + članstva)
 BIN_ZNACAJKE = [
     "landlocked", "island_nation", "un_member", "eu_member", "oecd_member",
     "nato_member", "g20_member", "commonwealth_member", "opec_member",
@@ -84,41 +84,46 @@ def ucitaj_i_pripremi(putanja):
         sys.exit(f"Greška: datoteka nije pronađena - {putanja}")
     df = pd.read_csv(putanja)
 
-    # Zadržavamo samo redove sa standardnom dohodovnom skupinom
+    # Zadržavamo samo redove sa standardnom dohodovnom skupinom, izbaci Not classified
     df = df[df[CILJ].isin(PORE_KLASA)].copy()
 
+    # sigurnosna provjera da uzmemo samo stupce koje želimo
     kont = [c for c in KONT_ZNACAJKE if c in df.columns]
     binc = [c for c in BIN_ZNACAJKE if c in df.columns]
     nom = [c for c in NOM_ZNACAJKE if c in df.columns]
 
+    # numerički i binarni --> matrica značajki, nominalni --> one-hot encoding
     X_num = df[kont + binc].astype(float)
     X_cat = pd.get_dummies(df[nom], prefix=nom).astype(int) # kategorijske u 0/1 (One-Hot Encoding)
     X = pd.concat([X_num.reset_index(drop=True),
                    X_cat.reset_index(drop=True)], axis=1) # matrica značajki
     y = df[CILJ].reset_index(drop=True)
 
-    # Sigurnosna provjera — skup je već imputiran, ali za svaki slučaj
+    # Sigurnosna provjera — skup je već imputiran, ali za svaki slučaj, popunjavanje Na medijanom 
     if X.isna().any().any():
         X = X.fillna(X.median(numeric_only=True))
 
+    # vraća matricu značajki, ciljnu varijablu i originalni DataFrame 
     return X, y, df.reset_index(drop=True)
 
 
 def treniraj_model(X_train, y_train):
     # Plitko stablo namjerno: interpretabilnost je glavni cilj ove metode.
-    # Prostor hiperparametara za testiranje kako bismo pronašli najbolji
+    # Prostor hiperparametara za testiranje kako bismo pronašli najbolju kombinaciju, isprobavamo sve navedene
     mreza = {
         "criterion": ["gini", "entropy"], # mjerenje čistoće
         "max_depth": [2, 3, 4, 5], # koliko duboko smije ići
-        "min_samples_leaf": [1, 3, 5, 8], # broj uzoraka u listu
-        "class_weight": [None, "balanced"], # kako trenira neujednačene klase
+        "min_samples_leaf": [1, 3, 5, 8], # min broj uzoraka u listu
+        "class_weight": [None, "balanced"], # kako trenira neujednačene klase, balanced daje težinu rijetkim klasama
     }
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=SLUCAJNO_STANJE)
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=SLUCAJNO_STANJE) # 5-struka cross-validation
     pretraga = GridSearchCV(
         DecisionTreeClassifier(random_state=SLUCAJNO_STANJE),
         param_grid=mreza, cv=cv, scoring="f1_macro", n_jobs=-1,
-    )
+    ) # testira sve kombinacije hiperparametara i ocjenjuje ih na temelju F1-macro metrika
     pretraga.fit(X_train, y_train)
+
+    # vraća model s najboljim hiperparametrima 
     return pretraga
 
 

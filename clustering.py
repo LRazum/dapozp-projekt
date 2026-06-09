@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from scipy.cluster.hierarchy import linkage, dendrogram
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
+from scipy.cluster.hierarchy import linkage, dendrogram # hijerarhijsko klasteriranje
+from sklearn.cluster import KMeans # particijsko klasteriranje
+from sklearn.decomposition import PCA # redukcija dimenzionalnosti za vizualizaciju
 from sklearn.metrics import silhouette_score, silhouette_samples
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler # standardizacija značajki
 
 
 sns.set_theme(style="whitegrid", palette="muted")
@@ -27,7 +27,11 @@ KONT_ZNACAJKE = [
     "life_expectancy", "infant_mortality", "health_expenditure_pct_gdp", 
     "education_expenditure_pct_gdp", "internet_users_pct", "electricity_access_pct", "land_area_km2",
 ]
+
+# stupci koje logaritmiramo zbog ekstremne desne asimetrije i velikih razlika u veličinama (npr. populacija, gustoća, površina)
 LOG_ZNACAJKE = ["population_total", "population_density", "land_area_km2"]
+
+# 11 pokazatelja za čitljiv heatmap
 PROFIL_ZNACAJKE = [
     "agriculture_pct_gdp", "services_pct_gdp", "rd_expenditure_pct_gdp", "fertility_rate", 
     "pop_65_plus_pct", "life_expectancy", "infant_mortality", "internet_users_pct",
@@ -43,15 +47,16 @@ def ucitaj_i_pripremi(putanja):
     if X.isna().any().any(): X = X.fillna(X.median(numeric_only=True))
     for c in LOG_ZNACAJKE:
         if c in X.columns: X[c] = np.log10(X[c].clip(lower=1e-3))
+    #vraca tablicu, matricu značajki, standardiziranu matricu i popis kontinuiranih značajki
     return df.reset_index(drop=True), X, StandardScaler().fit_transform(X), kont
 
 # CRTAČI GRAFOVA
-def graf_izbor_k(Xs, izlazni_dir, raspon=range(2, 11)):
+def graf_izbor_k(Xs, izlazni_dir, raspon=range(2, 11)): # traži optimalan broj klastera između 2 i 10
     inercije, silhe = [], []
     for k in raspon:
-        km = KMeans(n_clusters=k, random_state=SLUCAJNO_STANJE, n_init=20).fit(Xs)
-        inercije.append(km.inertia_)
-        silhe.append(silhouette_score(Xs, km.labels_))
+        km = KMeans(n_clusters=k, random_state=SLUCAJNO_STANJE, n_init=20).fit(Xs) # k-means za svaki k, 20 inicijalizacija za stabilnije rezultate
+        inercije.append(km.inertia_) # suma kvadratnih udaljenosi točaka od centroida klastera, manja je bolja
+        silhe.append(silhouette_score(Xs, km.labels_)) # prosječni silhouette koeficijent, između -1 i 1, veći je bolji (0 znači preklapanje klastera, negativni znači pogrešno grupiranje)
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
     ax1.plot(list(raspon), inercije, "o-", color="#2980b9")
@@ -68,9 +73,10 @@ def graf_izbor_k(Xs, izlazni_dir, raspon=range(2, 11)):
     fig.savefig(izlazni_dir / "01_izbor_k.png")
 
 def graf_dendrogram(Xs, df, izlazni_dir, k):
-    Z = linkage(Xs, method="ward")
+    Z = linkage(Xs, method="ward") # Aglomerativno hijerarhijsko klasteriranje, Wardova metoda minimizira varijanciju unutar klastera, često daje kompaktne i sferične klastere, dobro za podatke poput naših
     fig, ax = plt.subplots(figsize=(24, 8))
     
+    # crtanje dendrograma, rez na visini koja odgovara k klastera - po bojama, labeli su ISO3 kodovi država
     dendrogram(
         Z, 
         labels=df["iso3"].values, 
@@ -84,10 +90,11 @@ def graf_dendrogram(Xs, df, izlazni_dir, k):
     ax.set(title="Hijerarhijsko grupiranje (Ward) — dendrogram", xlabel="država (ISO3)", ylabel="Ward udaljenost")
     ax.legend(); fig.tight_layout(); fig.savefig(izlazni_dir / "02_dendrogram.png")
 
+# samo za vizualizaciju, ne koristi se u klasteriranju, ali pomaže razumjeti kako su klasteri raspoređeni u prostoru značajki
 def graf_pca(Xs, oznake, df, izlazni_dir):
     pca = PCA(n_components=2, random_state=SLUCAJNO_STANJE)
-    proj = pca.fit_transform(Xs)
-    var = pca.explained_variance_ratio_ * 100
+    proj = pca.fit_transform(Xs) # pronalazi nove osi koje maksimalno objašnjavaju varijanciju podataka, projicira podatke na prve dvije glavne komponente
+    var = pca.explained_variance_ratio_ * 100 # koliko varijance objašnjava svaka komponenta, u postocima
 
     fig, ax = plt.subplots(figsize=(11, 8))
     paleta = sns.color_palette("Set2", len(np.unique(oznake)))
@@ -105,9 +112,11 @@ def graf_pca(Xs, oznake, df, izlazni_dir):
     ax.legend(title="grupa"); sns.despine(ax=ax); fig.tight_layout(); fig.savefig(izlazni_dir / "03_pca_klasteri.png")
 
 def graf_profili(df, oznake, izlazni_dir):
+    # dodijeli klaster svakoj zemlji, zatim grupiraj po klasteru i izračunaj medijan za svaku značajku unutar klastera, 
+    # to nam daje profil klastera - koje značajke su iznad ili ispod prosjeka
     prof_znac = [c for c in PROFIL_ZNACAJKE if c in df.columns]
     z = (df[prof_znac] - df[prof_znac].mean()) / df[prof_znac].std()
-    z["klaster"] = oznake
+    z["klaster"] = oznake 
     medijani = z.groupby("klaster").median()
 
     fig, ax = plt.subplots(figsize=(12, 0.7 * len(medijani) + 3))
@@ -116,7 +125,7 @@ def graf_profili(df, oznake, izlazni_dir):
     fig.tight_layout(); fig.savefig(izlazni_dir / "04_profili_klastera.png")
 
 def graf_silhouette(Xs, oznake, izlazni_dir):
-    uzorci = silhouette_samples(Xs, oznake)
+    uzorci = silhouette_samples(Xs, oznake) # silhouette po svakoj zemlji, pokazuje koliko je zemlja dobro smještena u svom klasteru u usporedbi s drugim klasterima, između -1 i 1, veći je bolji (0 znači preklapanje klastera, negativni znači pogrešno grupiranje)
     klasteri = sorted(np.unique(oznake))
     paleta = sns.color_palette("Set2", len(klasteri))
 
